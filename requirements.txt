@@ -1,2 +1,2 @@
-selenium
-pyperclip
+selenium==3.14.0
+pyperclip==1.7.0
