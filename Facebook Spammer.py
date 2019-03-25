@@ -14,8 +14,8 @@ email_id = ''
 password = ''
 
 page_link = ''
-number_of_times =
-frequency =
+number_of_times = 
+frequency = 
 message = ""
 
 # -----------------  INITIALIZE CHROMEDRIVER  ---------------------- #
@@ -50,6 +50,7 @@ while len(comment_boxes) < number_of_times:
     comment_boxes = driver.find_elements_by_xpath("//div[text()='Write a comment...']")
 
 driver.execute_script("window.scrollTo(document.body.scrollHeight, 0);")               # Go to top of page.
+time.sleep(5)
 original = len(driver.find_elements_by_xpath("//div[text()='Write a comment...']"))    # Keep track of number of posts.
 pyperclip.copy(message)                                                                # Copy the message to clipboard.
 
@@ -60,11 +61,22 @@ for i in range(0, number_of_times):
     for j in range(0, frequency):
         comment_boxes = driver.find_elements_by_xpath("//div[text()='Write a comment...']")   # Find the comment boxes.
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'})", comment_boxes[i])  # Scroll to view.
-        time.sleep(1)
+        time.sleep(2)
         driver.execute_script("arguments[0].click();", comment_boxes[i])                        # Click on comment box.
-        time.sleep(1)
+
+        check = True
+        while check is True:
+            try:
+                comment_boxes = driver.find_elements_by_xpath("//div[text()='Write a comment...']")
+                if comment_boxes[i].find_element_by_xpath('..').value_of_css_property('color') == \
+                        'rgba(190, 195, 201, 1)':
+                    check = False
+            except:
+                pass
+
         actions.perform()                                                                       # Perform Ctrl+V
         ''' Perform next comment only when previous comment is performed.'''
-        while len(driver.find_elements_by_xpath("//div[text()='Write a comment...']")) != original:
+        while len(driver.find_elements_by_xpath("//div[text()='Write a comment...']")) < original:
             time.sleep(0.5)
+
     print(str(i+1), "/", str(number_of_times), "posts spammed.")
